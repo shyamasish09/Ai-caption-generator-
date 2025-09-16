@@ -1,0 +1,140 @@
+/* General Dark Mode */
+body.dark-mode {
+  background-color: #121212 !important;
+  color: #f1f1f1;
+}
+
+.dark-mode .card,
+.dark-mode #drop-area {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1;
+  border-color: #333 !important;
+}
+
+.dark-mode p,
+.dark-mode small,
+.dark-mode h5,
+.dark-mode .card-title,
+.dark-mode .text-muted {
+  color: #f1f1f1 !important;
+}
+
+.dark-mode .border-dashed {
+  border-color: #444 !important;
+}
+
+/* Drop area */
+#drop-area {
+  border-style: dashed;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#drop-area.highlight {
+  background: #e9f5ff !important;
+  border-color: #0d6efd !important;
+}
+
+.dark-mode #drop-area.highlight {
+  background: #2c2c2c !important;
+  border-color: #0d6efd !important;
+}
+
+/* Preview */
+#preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  object-fit: contain;
+}
+
+/* History cards */
+.history-item {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.history-item:hover {
+  transform: translateY(-5px);
+}
+
+.dark-mode .history-item {
+  background: #1e1e1e;
+  border: 1px solid #333;
+}
+
+/* Toggle switch */
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s, color 0.3s;
+}
+
+.toggle-switch.light {
+  background: linear-gradient(135deg, #f9d423, #ff4e50);
+  color: #fff;
+}
+
+.toggle-switch.dark {
+  background: linear-gradient(135deg, #4776e6, #8e54e9);
+  color: #fff;
+}
+
+.toggle-switch i {
+  font-size: 1.1rem;
+}
+
+/* Button improvements */
+.btn {
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+}
+
+/* Custom scrollbar for dark mode */
+.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
