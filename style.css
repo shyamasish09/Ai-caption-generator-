@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    
 }
 
 body {
@@ -559,7 +560,7 @@ input:checked + .toggle-label:before {
 }
 
 .btn-generate {
-    background: linear-gradient(#8100FF);
+    background: linear-gradient(#7023EA);
     color: #fff;
 }
 
@@ -894,7 +895,7 @@ footer {
         font-size: 32px;
     }
 
-  px  .circle-visual {
+    .circle-visual {
         width: 220px;
         height: 220px;
     }
@@ -905,5 +906,4 @@ footer {
 }
 #about{
     text-align: center;
-    
 }
