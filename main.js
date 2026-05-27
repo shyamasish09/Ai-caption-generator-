@@ -19,17 +19,21 @@ for (let i = 0; i < particleCount; i++) {
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#') return;
+        
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(href);
         if (target) {
             target.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
         }
-        // Close sidebar on mobile after click
-        if (window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.remove('active');
+        
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('expanded')) {
+            sidebar.classList.remove('expanded');
         }
     });
 });
@@ -46,12 +50,8 @@ document.addEventListener('mousemove', (e) => {
     });
 });
 
-// Scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
-
+// Scroll animations via IntersectionObserver
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -100px 0px' };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -68,116 +68,150 @@ document.querySelectorAll('.feature-card').forEach(card => {
     observer.observe(card);
 });
 
-// ===== SIDEBAR TOGGLE =====
+
+// ===== DESKTOP SIDEBAR LOGIC FUNCTIONS =====
 const sidebar = document.getElementById('sidebar');
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
 
-if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
+if (sidebar) {
+    sidebar.addEventListener('click', (e) => {
+        if (!sidebar.classList.contains('expanded') && !e.target.closest('#sidebarCloseBtn') && !e.target.closest('#accountBtnDesktop')) {
+            sidebar.classList.add('expanded');
+        }
     });
 }
 
-if (mobileSidebarClose) {
-    mobileSidebarClose.addEventListener('click', () => {
-        sidebar.classList.remove('active');
+if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.remove('expanded');
     });
 }
 
-// ===== THEME TOGGLE =====
-const themeToggleBtn = document.getElementById('themeToggleSide');
+
+// ===== NAVIGATION MENU ACCOUNT CONTROLS =====
+const mobileAccountDrawer = document.getElementById('mobileAccountDrawer');
+const accountHamburgerBtn = document.getElementById('accountHamburgerBtn');
+const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+const accountBtnDesktop = document.getElementById('accountBtnDesktop');
+
+const authModalOverlay = document.getElementById('authModalOverlay');
+const signInCard = document.getElementById('signInCard');
+const signUpCard = document.getElementById('signUpCard');
+
+// Toggle Drawer layout view
+if (accountHamburgerBtn) {
+    accountHamburgerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        mobileAccountDrawer.classList.toggle('active');
+    });
+}
+
+if (drawerCloseBtn) {
+    drawerCloseBtn.addEventListener('click', () => {
+        mobileAccountDrawer.classList.remove('active');
+    });
+}
+
+// Open Login Modal from Desktop click selection
+if (accountBtnDesktop) {
+    accountBtnDesktop.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openAuthModal('signin');
+    });
+}
+
+function openAuthModal(mode) {
+    mobileAccountDrawer.classList.remove('active');
+    authModalOverlay.classList.add('active');
+    switchAuthCard(mode);
+}
+
+function closeAuthModal() {
+    authModalOverlay.classList.remove('active');
+}
+
+function switchAuthCard(mode) {
+    if (mode === 'signin') {
+        signInCard.style.display = 'block';
+        signUpCard.style.display = 'none';
+    } else {
+        signInCard.style.display = 'none';
+        signUpCard.style.display = 'block';
+    }
+}
+
+// Close popup on backdrop wrapper shadow click
+if (authModalOverlay) {
+    authModalOverlay.addEventListener('click', (e) => {
+        if (e.target === authModalOverlay) closeAuthModal();
+    });
+}
+
+
+// ===== RESPONSIVE UNIFIED THEME TOGGLE FUNCTIONALITY =====
+const themeToggleSide = document.getElementById('themeToggleSide');
+const themeToggleMobile = document.getElementById('themeToggleMobile');
 const savedTheme = localStorage.getItem('theme');
+
 if (savedTheme === 'light') {
     document.body.classList.add('light-theme');
 }
 
-themeToggleBtn.addEventListener('click', (e) => {
+function toggleTheme(e) {
     e.preventDefault();
     document.body.classList.toggle('light-theme');
     localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
-});
+}
 
-// ===== AUTHENTICATION INTERACTION =====
-const signInModal = document.getElementById('signInModal');
-const signUpModal = document.getElementById('signUpModal');
-const accountMenuBtn = document.getElementById('accountMenuBtn');
-const closeSignIn = document.getElementById('closeSignIn');
-const closeSignUp = document.getElementById('closeSignUp');
-const switchToSignUp = document.getElementById('switchToSignUp');
-const switchToSignIn = document.getElementById('switchToSignIn');
+if (themeToggleSide) themeToggleSide.addEventListener('click', toggleTheme);
+if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
 
-accountMenuBtn.addEventListener('click', () => {
-    signInModal.classList.add('open');
-    if (window.innerWidth <= 768) {
-        sidebar.classList.remove('active');
-    }
-});
 
-closeSignIn.addEventListener('click', () => signInModal.classList.remove('open'));
-closeSignUp.addEventListener('click', () => signUpModal.classList.remove('open'));
-
-switchToSignUp.addEventListener('click', () => {
-    signInModal.classList.remove('open');
-    signUpModal.classList.add('open');
-});
-
-switchToSignIn.addEventListener('click', () => {
-    signUpModal.classList.remove('open');
-    signInModal.classList.add('open');
-});
-
-// Close open modal on background click
-window.addEventListener('click', (e) => {
-    if (e.target === signInModal) signInModal.classList.remove('open');
-    if (e.target === signUpModal) signUpModal.classList.remove('open');
-});
-
-// ===== GLOBAL VARIABLES =====
+// ===== CORE CAPTION PIPELINE PROCESSORS =====
 let currentImage = null;
 let currentCaption = '';
 let historyData = JSON.parse(localStorage.getItem('captionHistory')) || [];
 
-// File upload elements
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const previewArea = document.getElementById('previewArea');
 const previewImage = document.getElementById('previewImage');
 const generateBtn = document.getElementById('generateBtn');
 
-// Drag & drop
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = '#a855f7';
-    uploadArea.style.background = 'rgba(168, 85, 247, 0.1)';
-});
+if (uploadArea) {
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#a855f7';
+        uploadArea.style.background = 'rgba(168, 85, 247, 0.1)';
+    });
 
-uploadArea.addEventListener('dragleave', () => {
-    uploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
-    uploadArea.style.background = '';
-});
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+        uploadArea.style.background = '';
+    });
 
-uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
-    uploadArea.style.background = '';
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-        handleImageUpload(file);
-    }
-});
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+        uploadArea.style.background = '';
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            handleImageUpload(file);
+        }
+    });
 
-uploadArea.addEventListener('click', () => {
-    fileInput.click();
-});
+    uploadArea.addEventListener('click', () => { fileInput.click(); });
+}
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        handleImageUpload(file);
-    }
-});
+if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleImageUpload(file);
+    });
+}
 
 function handleImageUpload(file) {
     const reader = new FileReader();
@@ -200,82 +234,62 @@ function removeImage() {
 }
 
 function scrollToGenerator() {
-    document.getElementById('generator').scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
+    document.getElementById('generator').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ===== EXTENDED MOCK CAPTION GENERATION =====
-function generateMockCaption(platform, style, tone, language, length, emojis, hashtags, context) {
-    // Basic translation blocks for multi-language handling
-    const translations = {
-        english: {
-            conversational: "Here is a snapshot of what's currently keeping me inspired.",
-            storytelling: "Every journey has an unexpected turning point. This moment captured it perfectly.",
-            minimal: "Simplicity.",
-            descriptive: "A gorgeous setup defined by clean lines, rich tones, and detailed elements.",
-            poetic: "Like shadows chasing the golden hour sunrise.",
-            professional: "Optimizing aesthetics and strategies for next-level production values."
-        },
-        hindi: {
-            conversational: "बस कुछ ऐसा जो आजकल मुझे प्रेरित कर रहा है।",
-            storytelling: "हर कहानी का एक खूबसूरत मोड़ होता है। यह पल उसी की गवाही देता है।",
-            minimal: "सादगी।",
-            descriptive: "शानदार रंगों, गहरी परछाइयों और सटीक बारीकियों का एक अनूठा संगम।",
-            poetic: "जैसे सुबह की सुनहरी किरणें अंधेरे को मिटा रही हों।",
-            professional: "सफलता केवल काम से नहीं, बल्कि सही विज़न और मेहनत से मिलती है।"
-        },
-        bengali: {
-            conversational: "আজকের দিনটার একটা ছোট্ট মুহূর্ত, যা বেশ ভালো লাগলো।",
-            storytelling: "প্রতিটি গল্পের একটি নিজস্ব মোড় থাকে। এই মুহূর্তটি ঠিক সেটাই ফ্রেমবন্দী করল।",
-            minimal: "সহজ সরল জীবন।",
-            descriptive: "চমৎকার রঙের বিন্যাস এবং আলোর খেলার এক নিখুঁত প্রকাশ।",
-            poetic: "যেন এক টুকরো মেঘ এসে ছুঁয়ে গেল মনের কোণ।",
-            professional: "পরিশ্রম এবং সঠিক লক্ষ্যই এগিয়ে যাওয়ার একমাত্র চাবিকাঠি।"
-        },
-        tamil: {
-            conversational: "இன்று என்னை ஊக்கப்படுத்திய ஒரு அழகான தருணம் இது.",
-            storytelling: "ஒவ்வொரு பயணத்திற்கும் ஒரு அர்த்தம் உண்டு. இந்த நொடி அதை உணர்த்துகிறது.",
-            minimal: "எளிமை.",
-            descriptive: "அழகான வண்ணங்கள் மற்றும் துல்லியமான அமைப்புகளின் அற்புதம்.",
-            poetic: "அந்தோ! மாலை நேரத்து பொன் வானம் தரும் பேரமைதி.",
-            professional: "தொழில்முறை ஒழுக்கமும் கடின உழைப்பும் என்றும் வெற்றியைத் தரும்."
+// Updated simulation arrays incorporating multi-variable conditional parameters
+function generateCaptionText(platform, style, tone, lang, length, emojis, hashtags, context) {
+    let base = "";
+    
+    if (lang === "hindi") {
+        base = "इस सुंदर दृश्य का आनंद लेते हुए। ज़िन्दगी के कुछ पल बेहद खास होते हैं।";
+    } else if (lang === "bengali") {
+        base = "আজকের এই সুন্দর মুহূর্ত ফ্রেমবন্দী করলাম। জীবনের সেরা কিছু স্মৃতি।";
+    } else if (lang === "tamil") {
+        base = "இந்த அழகான தருணம் எப்போதும் என் நினைவில் இருக்கும். மகிழ்ச்சியான வாழ்க்கை.";
+    } else {
+        // English Default Array Template Blocks
+        if (style === "storytelling") {
+            base = "It started with a simple thought, but as the day went on, this exact viewpoint made me stop and realize how far the journey has come.";
+        } else if (style === "minimal") {
+            base = "Grateful for today.";
+        } else if (style === "poetic") {
+            base = "Sunlight playing on old memories, dancing like gold across fields of blue.";
+        } else if (style === "professional") {
+            base = "Strategic focus and core alignments delivering consistent excellence throughout our latest developments.";
+        } else if (style === "conversational") {
+            base = "Honestly, sitting here makes me wonder—how often do we actually stop to enjoy the view? What do you think?";
+        } else {
+            base = "A breathtaking perspective balancing perfect lighting with natural composition layers.";
         }
-    };
-
-    const targetLang = translations[language] || translations.english;
-    let baseText = targetLang[style] || targetLang.conversational;
-
-    // Incorporate context if typed in by the user
-    if (context && context.trim().length > 0) {
-        if (language === 'english') baseText = `Reflecting on [${context.trim()}]. ${baseText}`;
-        else if (language === 'hindi') baseText = `[${context.trim()}] के बारे में सोचते हुए। ${baseText}`;
-        else if (language === 'bengali') baseText = `[${context.trim()}] নিয়ে ভাবছিলাম। ${baseText}`;
-        else if (language === 'tamil') baseText = `[${context.trim()}] பற்றிய எண்ணங்கள். ${baseText}`;
     }
 
-    let caption = `[${platform.toUpperCase()} - ${tone.toUpperCase()}] ${baseText}`;
+    if (context.trim().length > 0) {
+        base = `[Regarding: ${context}] \n${base}`;
+    }
 
+    // Adapt layout lengths
     if (length === 'long') {
-        caption += ' ' + (language === 'english' ? "This represents the hard work, consistency, and alignment of vision needed daily." : "इसके लिए निरंतरता और सही दिशा की आवश्यकता होती है।");
-    } else if (length === 'medium') {
-        caption += ' ' + (language === 'english' ? "Grateful for the journey." : "इस खूबसूरत सफर का आभारी हूँ।");
+        base += " Creating space for new milestones ahead while holding appreciation for every small step taken.";
+    }
+
+    // Inject Platform specific signatures
+    if (platform === "linkedin") {
+        base = "💼 Professional Updates // \n\n" + base;
+    } else if (platform === "twitter") {
+        if (base.length > 200) base = base.substring(0, 200) + "...";
     }
 
     if (emojis) {
-        const emojiList = ['✨', '📸', '🔥', '🌟', '💫', '🙌', '🎯'];
-        const randomEmojis = emojiList.sort(() => 0.5 - Math.random()).slice(0, 3).join(' ');
-        caption += ' ' + randomEmojis;
+        const toneEmojis = { happy: '✨ 😊', emotional: '❤️ 🥺', funny: '😂 💀', inspirational: '🚀 🌟', romantic: '💖 ✨', respectful: '🙏 ✨' };
+        base += " " + (toneEmojis[tone] || '✨');
     }
 
     if (hashtags) {
-        const hashtagList = [`#${platform}`, `#${style}`, `#${tone}`, '#photography', '#vibes', '#instagood'];
-        const randomHashtags = hashtagList.sort(() => 0.5 - Math.random()).slice(0, 4).join(' ');
-        caption += '\n\n' + randomHashtags;
+        base += `\n\n#${platform}Vibes #${style}Style #${tone} #${lang}`;
     }
 
-    return caption;
+    return base;
 }
 
 async function generateCaption() {
@@ -295,18 +309,17 @@ async function generateCaption() {
     const platform = document.getElementById('captionPlatform').value;
     const style = document.getElementById('captionStyle').value;
     const tone = document.getElementById('captionTone').value;
-    const language = document.getElementById('captionLanguage').value;
+    const lang = document.getElementById('captionLanguage').value;
     const length = document.getElementById('captionLength').value;
     const includeEmojis = document.getElementById('includeEmojis').checked;
     const includeHashtags = document.getElementById('includeHashtags').checked;
     const context = document.getElementById('captionContext').value;
 
     setTimeout(() => {
-        const mockCaption = generateMockCaption(platform, style, tone, language, length, includeEmojis, includeHashtags, context);
-        currentCaption = mockCaption;
+        currentCaption = generateCaptionText(platform, style, tone, lang, length, includeEmojis, includeHashtags, context);
         captionContent.innerHTML = `<p>${currentCaption.replace(/\n/g, '<br>')}</p>`;
         addToHistory(currentImage, currentCaption);
-    }, 500);
+    }, 600);
 }
 
 function clearCaption() {
@@ -316,34 +329,23 @@ function clearCaption() {
 }
 
 function copyCaption() {
-    if (!currentCaption) {
-        alert('No caption to copy!');
-        return;
-    }
-
+    if (!currentCaption) return alert('No caption to copy!');
     navigator.clipboard.writeText(currentCaption).then(() => {
-        const btn = event.target.closest('button');
+        const btn = document.getElementById('copyBtn');
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-width="2"/></svg> Copied!';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
         btn.style.background = 'rgba(16, 185, 129, 0.2)';
         btn.style.borderColor = '#10b981';
         btn.style.color = '#10b981';
-
         setTimeout(() => {
             btn.innerHTML = originalText;
-            btn.style.background = '';
-            btn.style.borderColor = '';
-            btn.style.color = '';
+            btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = '';
         }, 2000);
     });
 }
 
 function downloadCaption() {
-    if (!currentCaption) {
-        alert('No caption to download!');
-        return;
-    }
-
+    if (!currentCaption) return alert('No caption to download!');
     const blob = new Blob([currentCaption], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -355,15 +357,15 @@ function downloadCaption() {
     URL.revokeObjectURL(url);
 }
 
-// ===== HISTORY HANDLING =====
+
+// ===== HISTORY HANDLING FUNCTIONS =====
 function createThumbnail(base64Image, maxWidth = 200) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             const scale = maxWidth / img.width;
             const canvas = document.createElement('canvas');
-            canvas.width = maxWidth;
-            canvas.height = img.height * scale;
+            canvas.width = maxWidth; canvas.height = img.height * scale;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/jpeg', 0.6));
@@ -374,12 +376,7 @@ function createThumbnail(base64Image, maxWidth = 200) {
 
 async function addToHistory(image, caption) {
     const thumbnail = await createThumbnail(image);
-    const historyItem = {
-        id: Date.now(),
-        thumbnail: thumbnail,
-        caption: caption,
-        date: new Date().toLocaleString()
-    };
+    const historyItem = { id: Date.now(), thumbnail: thumbnail, caption: caption, date: new Date().toLocaleString() };
     historyData.unshift(historyItem);
     if (historyData.length > 12) historyData = historyData.slice(0, 12);
     localStorage.setItem('captionHistory', JSON.stringify(historyData));
@@ -388,6 +385,7 @@ async function addToHistory(image, caption) {
 
 function renderHistory() {
     const historyGrid = document.getElementById('historyGrid');
+    if (!historyGrid) return;
     if (historyData.length === 0) {
         historyGrid.innerHTML = '<p class="no-history">No history yet. Generate your first caption!</p>';
         return;
@@ -437,8 +435,7 @@ function clearHistory() {
     }
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
-    generateBtn.disabled = true;
+    if (generateBtn) generateBtn.disabled = true;
 });
