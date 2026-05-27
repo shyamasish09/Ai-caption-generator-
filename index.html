@@ -4,76 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Caption Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-icon">AI</div>
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close Menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
         <nav class="sidebar-nav">
             <a href="#home" class="sidebar-link" title="Home">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="2"/>
-                    <polyline points="9 22 9 12 15 12 15 22" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-house"></i>
                 <span class="sidebar-label">Home</span>
             </a>
             <a href="#generator" class="sidebar-link" title="Generator">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span class="sidebar-label">Generator</span>
             </a>
             <a href="#features" class="sidebar-link" title="Features">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-star"></i>
                 <span class="sidebar-label">Features</span>
             </a>
             <a href="#about" class="sidebar-link" title="About">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                    <path d="M12 16v-4M12 8h.01" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-circle-info"></i>
                 <span class="sidebar-label">About</span>
             </a>
             <a href="#historySection" class="sidebar-link" title="History">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                    <polyline points="12 6 12 12 16 14" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-clock-rotate-left"></i>
                 <span class="sidebar-label">History</span>
             </a>
-            <button class="sidebar-link" title="Account" id="accountMenuBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="2"/>
-                    <circle cx="12" cy="7" r="4" stroke-width="2"/>
-                </svg>
-                <span class="sidebar-label">Account</span>
-            </button>
             <a href="#" class="sidebar-link" title="Theme" id="themeToggleSide">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="3" stroke-width="2"/>
-                    <path d="M12 5v2M12 17v2M5 12h2M17 12h2M8.22 8.22l1.41 1.41M14.37 14.37l1.41 1.41M8.22 15.78l1.41-1.41M14.37 9.63l1.41-1.41" stroke-width="2"/>
-                </svg>
+                <i class="fa-solid fa-circle-half-stroke"></i>
                 <span class="sidebar-label">Theme</span>
             </a>
+            <a href="#" title="Account" class="sidebar-link" id="accountBtnDesktop">
+                <i class="fa-solid fa-user"></i>
+                <span class="sidebar-label">Account</span>
+            </a>
         </nav>
-        <div class="sidebar-footer">
-            <button class="sidebar-link" id="mobileSidebarClose" title="Close">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2"/>
-                </svg>
-            </button>
+    </div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="#home" class="mobile-nav-link">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="#generator" class="mobile-nav-link">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Create</span>
+        </a>
+        <a href="#features" class="mobile-nav-link">
+            <i class="fa-solid fa-star"></i>
+            <span>Features</span>
+        </a>
+        <a href="#historySection" class="mobile-nav-link">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History</span>
+        </a>
+        <a href="#" class="mobile-nav-link" id="themeToggleMobile">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+            <span>Theme</span>
+        </a>
+        <a href="#" class="mobile-nav-link" id="accountHamburgerBtn">
+            <i class="fa-solid fa-bars"></i>
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <div class="mobile-account-drawer" id="mobileAccountDrawer">
+        <div class="drawer-header">
+            <h3>Account Access</h3>
+            <button class="drawer-close-btn" id="drawerCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-content">
+            <button class="btn btn-primary auth-trigger-btn" onclick="openAuthModal('signin')">Sign In</button>
+            <button class="btn-secondary-action auth-trigger-btn" onclick="openAuthModal('signup')" style="margin-top: 15px; width: 100%;">Sign Up</button>
         </div>
     </div>
 
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M3 12h18M3 6h18M3 18h18" stroke-width="2"/>
-        </svg>
-    </button>
+    <div class="auth-modal-overlay" id="authModalOverlay">
+        <div class="auth-card" id="signInCard">
+            <button class="auth-close-x" onclick="closeAuthModal()">×</button>
+            <h2>Sign In</h2>
+            <form onsubmit="event.preventDefault(); alert('Signed In successfully!'); closeAuthModal();">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="auth-input" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="auth-input" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary auth-submit-btn">Login</button>
+            </form>
+            <p class="auth-switch-text">Don't have an account? <span onclick="switchAuthCard('signup')">Sign Up</span></p>
+        </div>
+
+        <div class="auth-card" id="signUpCard" style="display: none;">
+            <button class="auth-close-x" onclick="closeAuthModal()">×</button>
+            <h2>Sign Up</h2>
+            <div class="auth-scrollable-container">
+                <form onsubmit="event.preventDefault(); alert('Account registered successfully!'); closeAuthModal();">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="auth-input" required placeholder="Pick a username">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" class="auth-input" required placeholder="First name">
+                        </div>
+                        <div class="form-group">
+                            <label>Second Name</label>
+                            <input type="text" class="auth-input" required placeholder="Last name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" class="auth-input" required placeholder="yourname@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="auth-input" required placeholder="Create password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" class="auth-input" required placeholder="Repeat password">
+                    </div>
+                    <button type="submit" class="btn btn-primary auth-submit-btn">Register</button>
+                </form>
+            </div>
+            <p class="auth-switch-text">Already have an account? <span onclick="switchAuthCard('signin')">Sign In</span></p>
+        </div>
+    </div>
 
     <div class="particles" id="particles"></div>
 
@@ -106,18 +173,13 @@
                 
                 <div class="upload-card">
                     <div class="upload-area" id="uploadArea">
-                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-width="2"/>
-                        </svg>
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                         <p class="upload-text">Drag & Drop an image or <span class="click-text">click here</span></p>
                         <input type="file" id="fileInput" accept="image/*" hidden>
                         
                         <div class="upload-buttons">
                             <button class="btn-upload btn-choose" onclick="document.getElementById('fileInput').click()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-width="2"/>
-                                </svg>
-                                Choose File
+                                <i class="fa-solid fa-folder-open"></i> Choose File
                             </button>
                         </div>
                     </div>
@@ -128,16 +190,9 @@
                     </div>
                 </div>
 
-                <div class="context-card">
-                    <div class="option-group">
-                        <label for="captionContext">Add Context / Extra Details (Optional)</label>
-                        <textarea id="captionContext" class="select-input textarea-input" placeholder="Type what's happening in the image, specific feelings, or targets..."></textarea>
-                    </div>
-                </div>
-
                 <div class="options-card">
                     <div class="option-group">
-                        <label>Platform</label>
+                        <label>Platform Target</label>
                         <select id="captionPlatform" class="select-input">
                             <option value="instagram">Instagram</option>
                             <option value="facebook">Facebook</option>
@@ -160,7 +215,7 @@
                     </div>
 
                     <div class="option-group">
-                        <label>Tone</label>
+                        <label>Tone Selection</label>
                         <select id="captionTone" class="select-input">
                             <option value="happy">Happy</option>
                             <option value="emotional">Emotional</option>
@@ -172,12 +227,12 @@
                     </div>
 
                     <div class="option-group">
-                        <label>Language</label>
+                        <label>Language Output</label>
                         <select id="captionLanguage" class="select-input">
                             <option value="english">English</option>
-                            <option value="hindi">Hindi (हिंदी)</option>
-                            <option value="bengali">Bengali (বাংলা)</option>
-                            <option value="tamil">Tamil (தமிழ்)</option>
+                            <option value="hindi">Hindi</option>
+                            <option value="bengali">Bengali</option>
+                            <option value="tamil">Tamil</option>
                         </select>
                     </div>
 
@@ -207,11 +262,14 @@
                     </div>
                 </div>
 
+                <div class="context-card">
+                    <label class="context-label">Context / Additional Details</label>
+                    <textarea id="captionContext" class="context-textarea" placeholder="Add context here (e.g., Weekend trip with friends at mountains, birthday party vibes, etc...)"></textarea>
+                </div>
+
                 <div class="caption-card">
                     <div class="caption-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="2"/>
-                        </svg>
+                        <i class="fa-solid fa-comment-nodes"></i>
                         <h3>Generated Caption</h3>
                     </div>
                     <div class="caption-content" id="captionContent">
@@ -220,41 +278,26 @@
 
                     <div class="action-buttons">
                         <button class="btn-action btn-generate" id="generateBtn" onclick="generateCaption()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2"/>
-                            </svg>
-                            Generate Caption
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Caption
                         </button>
                         <button class="btn-action btn-delete" onclick="clearCaption()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-width="2"/>
-                            </svg>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
 
                     <div class="copy-download-buttons">
-                        <button class="btn-secondary-action" onclick="copyCaption()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke-width="2"/>
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2"/>
-                            </svg>
-                            Copy
+                        <button class="btn-secondary-action" id="copyBtn" onclick="copyCaption()">
+                            <i class="fa-solid fa-copy"></i> Copy
                         </button>
                         <button class="btn-secondary-action" onclick="downloadCaption()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2"/>
-                            </svg>
-                            Download
+                            <i class="fa-solid fa-arrow-down-to-bracket"></i> Download
                         </button>
                     </div>
                 </div>
 
                 <div class="history-section" id="historySection">
                     <div class="history-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                            <polyline points="12 6 12 12 16 14" stroke-width="2"/>
-                        </svg>
+                        <i class="fa-solid fa-clock-rotate-left"></i>
                         <h3>History</h3>
                         <button class="btn-clear-history" onclick="clearHistory()">Clear All</button>
                     </div>
@@ -278,69 +321,13 @@
 
         <section id="about">
             <h1>About</h1>
-            <p class="feature-card">A Caption Generator Website is an online platform that automatically creates suitable captions for images uploaded by users. It uses artificial intelligence and machine learning models to analyze the content of an image and generate descriptive or creative text that matches it. Such websites help users save time and effort in writing engaging captions for social media posts, marketing materials, or personal galleries. The site typically includes an image upload feature, a caption generation button, and a display section to show the generated result. By combining modern web technologies like HTML, CSS, and JavaScript with AI-based image captioning models, the Caption Generator Website offers an interactive and user-friendly experience that bridges creativity and automation.</p>
+            <p class="feature-card">A Caption Generator Website is an online platform that automatically creates suitable captions for images uploaded by users. It uses artificial intelligence and machine learning models to analyze the content of an image and generate descriptive or creative text that matches it.</p>
         </section>
     </main>
 
-    <div class="auth-modal" id="signInModal">
-        <div class="auth-modal-card">
-            <button class="auth-close" id="closeSignIn">&times;</button>
-            <h3>Sign In</h3>
-            <form class="auth-form" onsubmit="event.preventDefault(); alert('Signed In successfully!'); document.getElementById('signInModal').classList.remove('open');">
-                <div class="auth-group">
-                    <label>Username</label>
-                    <input type="text" required class="select-input" placeholder="Enter username">
-                </div>
-                <div class="auth-group">
-                    <label>Password</label>
-                    <input type="password" required class="select-input" placeholder="Enter password">
-                </div>
-                <button type="submit" class="btn btn-primary auth-btn">SIGN IN</button>
-            </form>
-            <p class="auth-switch">Don't have an account? <span id="switchToSignUp">Sign Up</span></p>
-        </div>
-    </div>
-
-    <div class="auth-modal" id="signUpModal">
-        <div class="auth-modal-card">
-            <button class="auth-close" id="closeSignUp">&times;</button>
-            <h3>Sign Up</h3>
-            <form class="auth-form" onsubmit="event.preventDefault(); alert('Account registered successfully!'); document.getElementById('signUpModal').classList.remove('open');">
-                <div class="auth-row">
-                    <div class="auth-group">
-                        <label>First Name</label>
-                        <input type="text" required class="select-input" placeholder="First name">
-                    </div>
-                    <div class="auth-group">
-                        <label>Second Name</label>
-                        <input type="text" required class="select-input" placeholder="Last name">
-                    </div>
-                </div>
-                <div class="auth-group">
-                    <label>Username</label>
-                    <input type="text" required class="select-input" placeholder="Choose username">
-                </div>
-                <div class="auth-group">
-                    <label>Email</label>
-                    <input type="email" required class="select-input" placeholder="Enter email address">
-                </div>
-                <div class="auth-group">
-                    <label>Password</label>
-                    <input type="password" required class="select-input" placeholder="Create password">
-                </div>
-                <div class="auth-group">
-                    <label>Confirm Password</label>
-                    <input type="password" required class="select-input" placeholder="Confirm password">
-                </div>
-                <button type="submit" class="btn btn-primary auth-btn">SIGN UP</button>
-            </form>
-            <p class="auth-switch">Already have an account? <span id="switchToSignIn">Sign In</span></p>
-        </div>
-    </div>
-
     <footer>
-        <p>&copy; 2025 Shyamasish - AI Caption Generator. All rights reserved.</p>
-        <p class="footer-url">shyamanish09.github.io</p>
+        <p>&copy; 2026 Shyamasish - AI Caption Generator. All rights reserved.</p>
+        <p class="footer-url">shyamasish09.github.io</p>
     </footer>
 
     <script src="main.js"></script>
