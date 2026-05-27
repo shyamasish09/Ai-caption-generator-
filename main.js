@@ -16,7 +16,7 @@ for (let i = 0; i < particleCount; i++) {
     particlesContainer.appendChild(particle);
 }
 
-// Smooth scroll
+// Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -27,10 +27,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 block: 'start'
             });
         }
+        // Close sidebar on mobile after click
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('active');
+        }
     });
 });
 
-// Parallax effect on mouse move
+// Parallax effect
 document.addEventListener('mousemove', (e) => {
     const circles = document.querySelectorAll('.circle');
     const x = e.clientX / window.innerWidth;
@@ -42,7 +46,7 @@ document.addEventListener('mousemove', (e) => {
     });
 });
 
-// Animate elements on scroll
+// Scroll animations
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -100px 0px'
@@ -64,19 +68,84 @@ document.querySelectorAll('.feature-card').forEach(card => {
     observer.observe(card);
 });
 
-// Global variables
+// ===== SIDEBAR TOGGLE =====
+const sidebar = document.getElementById('sidebar');
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+
+if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+}
+
+if (mobileSidebarClose) {
+    mobileSidebarClose.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+    });
+}
+
+// ===== THEME TOGGLE =====
+const themeToggleBtn = document.getElementById('themeToggleSide');
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+}
+
+themeToggleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.body.classList.toggle('light-theme');
+    localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+});
+
+// ===== AUTHENTICATION INTERACTION =====
+const signInModal = document.getElementById('signInModal');
+const signUpModal = document.getElementById('signUpModal');
+const accountMenuBtn = document.getElementById('accountMenuBtn');
+const closeSignIn = document.getElementById('closeSignIn');
+const closeSignUp = document.getElementById('closeSignUp');
+const switchToSignUp = document.getElementById('switchToSignUp');
+const switchToSignIn = document.getElementById('switchToSignIn');
+
+accountMenuBtn.addEventListener('click', () => {
+    signInModal.classList.add('open');
+    if (window.innerWidth <= 768) {
+        sidebar.classList.remove('active');
+    }
+});
+
+closeSignIn.addEventListener('click', () => signInModal.classList.remove('open'));
+closeSignUp.addEventListener('click', () => signUpModal.classList.remove('open'));
+
+switchToSignUp.addEventListener('click', () => {
+    signInModal.classList.remove('open');
+    signUpModal.classList.add('open');
+});
+
+switchToSignIn.addEventListener('click', () => {
+    signUpModal.classList.remove('open');
+    signInModal.classList.add('open');
+});
+
+// Close open modal on background click
+window.addEventListener('click', (e) => {
+    if (e.target === signInModal) signInModal.classList.remove('open');
+    if (e.target === signUpModal) signUpModal.classList.remove('open');
+});
+
+// ===== GLOBAL VARIABLES =====
 let currentImage = null;
 let currentCaption = '';
 let historyData = JSON.parse(localStorage.getItem('captionHistory')) || [];
 
-// File upload handling
+// File upload elements
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const previewArea = document.getElementById('previewArea');
 const previewImage = document.getElementById('previewImage');
 const generateBtn = document.getElementById('generateBtn');
 
-// Drag and drop
+// Drag & drop
 uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadArea.style.borderColor = '#a855f7';
@@ -99,7 +168,6 @@ uploadArea.addEventListener('drop', (e) => {
     }
 });
 
-// Click to upload
 uploadArea.addEventListener('click', () => {
     fileInput.click();
 });
@@ -111,7 +179,6 @@ fileInput.addEventListener('change', (e) => {
     }
 });
 
-// Handle image upload
 function handleImageUpload(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -124,7 +191,6 @@ function handleImageUpload(file) {
     reader.readAsDataURL(file);
 }
 
-// Remove image
 function removeImage() {
     currentImage = null;
     uploadArea.style.display = 'block';
@@ -133,7 +199,6 @@ function removeImage() {
     generateBtn.disabled = true;
 }
 
-// Scroll to generator
 function scrollToGenerator() {
     document.getElementById('generator').scrollIntoView({
         behavior: 'smooth',
@@ -141,93 +206,115 @@ function scrollToGenerator() {
     });
 }
 
-// Caption templates based on style
-const captionTemplates = {
-    creative: [
-        "✨ Capturing moments that take your breath away 🌟\n\nEvery frame tells a story, and this one speaks volumes about beauty, creativity, and inspiration.\n\n#CreativeVibes #ArtOfPhotography #Inspiration #MomentsCaptured #VisualStorytelling",
-        "🎨 Where art meets reality 🌈\n\nThis moment perfectly encapsulates the magic of creativity and the power of visual expression.\n\n#ArtisticVision #CreativeMinds #PhotographyLovers #InspiredDaily #AestheticGoals",
-        "🌟 Creating magic one frame at a time ✨\n\nSometimes the most beautiful moments are the ones we capture when we're not looking.\n\n#MagicMoments #CreativeExpression #VisualArt #CapturedBeauty #Inspiration"
-    ],
-    professional: [
-        "Excellence in every detail.\n\nCommitted to delivering outstanding results through dedication, innovation, and professional expertise.\n\n#ProfessionalExcellence #BusinessSuccess #QualityWork #IndustryLeader #ExpertiseMatters",
-        "Driving innovation and achieving excellence.\n\nOur commitment to quality and professional standards sets us apart in today's competitive landscape.\n\n#BusinessGrowth #ProfessionalDevelopment #IndustryExperts #SuccessMindset #CorporateExcellence",
-        "Elevating standards through professional excellence.\n\nDedicated to providing superior service and innovative solutions that drive measurable results.\n\n#Leadership #ProfessionalServices #BusinessStrategy #Excellence #Innovation"
-    ],
-    casual: [
-        "Just living my best life! 😊\n\nSometimes you gotta stop and appreciate the little things. This moment right here? Pure happiness.\n\n#GoodVibes #LivingMyBestLife #HappyMoments #ChillVibes #Blessed",
-        "Another day, another adventure! 🌟\n\nLife's too short not to enjoy every moment. Making memories and loving every second of it!\n\n#DailyAdventures #GoodTimes #MakingMemories #LifeIsGood #EnjoyTheJourney",
-        "Feeling grateful for moments like these ❤️\n\nJust me, enjoying life and all the beautiful moments it brings. Stay positive, friends!\n\n#Grateful #PositiveVibes #SimplePleasures #HappyLife #BlessedAndGrateful"
-    ],
-    funny: [
-        "When life gives you lemons, take a selfie and post it! 🍋😂\n\nBecause why not? Everything's funnier when you document it for the internet.\n\n#FunnyMoments #ComedyGold #LaughMore #HumorDaily #MemeMaterial",
-        "Plot twist: I have no idea what I'm doing 😅\n\nBut hey, fake it till you make it, right? At least I look good doing it!\n\n#ConfidentlyLost #FunnyLife #RelatableContent #ComedyCentral #KeepItReal",
-        "My life is basically a series of awkward moments interrupted by snacks 🍕😂\n\nAnd honestly? I wouldn't have it any other way!\n\n#AwkwardAndProud #FoodieLife #FunnyTruths #ComedyGold #RelatableAF"
-    ],
-    inspirational: [
-        "🌅 Believe in yourself and all that you are ✨\n\nKnow that there is something inside you that is greater than any obstacle. Keep pushing forward!\n\n#Motivation #BelieveInYourself #Inspiration #KeepGoing #SuccessJourney #DreamBig",
-        "💪 Your only limit is you 🚀\n\nDream bigger, work harder, and never stop believing in the power of your potential.\n\n#Motivated #InspirationalQuotes #SuccessMindset #AchieveYourDreams #PersonalGrowth",
-        "🌟 Every day is a new beginning ☀️\n\nTake a deep breath, smile, and start again. Your journey to greatness begins with a single step.\n\n#NewBeginnings #StayPositive #InspireDaily #GrowthMindset #MotivationMonday"
-    ],
-    descriptive: [
-        "A stunning visual composition that showcases exceptional lighting, balanced composition, and remarkable attention to detail.\n\nThe interplay of colors and textures creates a harmonious aesthetic that draws the viewer's attention.\n\n#Photography #VisualArt #Composition #AestheticPhotography #DetailOriented",
-        "This image exemplifies the perfect balance between light and shadow, with careful attention to framing and perspective.\n\nThe composition demonstrates a masterful understanding of visual storytelling and technical execution.\n\n#PhotographyTechnique #VisualComposition #ArtisticDetail #ProfessionalPhotography #VisualNarrative",
-        "A carefully crafted visual that highlights exceptional technical skill and artistic vision.\n\nEvery element within the frame contributes to a cohesive and compelling narrative that engages the viewer.\n\n#TechnicalExcellence #ArtisticVision #PhotographySkills #VisualStory #CompositionMatters"
-    ]
-};
+// ===== EXTENDED MOCK CAPTION GENERATION =====
+function generateMockCaption(platform, style, tone, language, length, emojis, hashtags, context) {
+    // Basic translation blocks for multi-language handling
+    const translations = {
+        english: {
+            conversational: "Here is a snapshot of what's currently keeping me inspired.",
+            storytelling: "Every journey has an unexpected turning point. This moment captured it perfectly.",
+            minimal: "Simplicity.",
+            descriptive: "A gorgeous setup defined by clean lines, rich tones, and detailed elements.",
+            poetic: "Like shadows chasing the golden hour sunrise.",
+            professional: "Optimizing aesthetics and strategies for next-level production values."
+        },
+        hindi: {
+            conversational: "बस कुछ ऐसा जो आजकल मुझे प्रेरित कर रहा है।",
+            storytelling: "हर कहानी का एक खूबसूरत मोड़ होता है। यह पल उसी की गवाही देता है।",
+            minimal: "सादगी।",
+            descriptive: "शानदार रंगों, गहरी परछाइयों और सटीक बारीकियों का एक अनूठा संगम।",
+            poetic: "जैसे सुबह की सुनहरी किरणें अंधेरे को मिटा रही हों।",
+            professional: "सफलता केवल काम से नहीं, बल्कि सही विज़न और मेहनत से मिलती है।"
+        },
+        bengali: {
+            conversational: "আজকের দিনটার একটা ছোট্ট মুহূর্ত, যা বেশ ভালো লাগলো।",
+            storytelling: "প্রতিটি গল্পের একটি নিজস্ব মোড় থাকে। এই মুহূর্তটি ঠিক সেটাই ফ্রেমবন্দী করল।",
+            minimal: "সহজ সরল জীবন।",
+            descriptive: "চমৎকার রঙের বিন্যাস এবং আলোর খেলার এক নিখুঁত প্রকাশ।",
+            poetic: "যেন এক টুকরো মেঘ এসে ছুঁয়ে গেল মনের কোণ।",
+            professional: "পরিশ্রম এবং সঠিক লক্ষ্যই এগিয়ে যাওয়ার একমাত্র চাবিকাঠি।"
+        },
+        tamil: {
+            conversational: "இன்று என்னை ஊக்கப்படுத்திய ஒரு அழகான தருணம் இது.",
+            storytelling: "ஒவ்வொரு பயணத்திற்கும் ஒரு அர்த்தம் உண்டு. இந்த நொடி அதை உணர்த்துகிறது.",
+            minimal: "எளிமை.",
+            descriptive: "அழகான வண்ணங்கள் மற்றும் துல்லியமான அமைப்புகளின் அற்புதம்.",
+            poetic: "அந்தோ! மாலை நேரத்து பொன் வானம் தரும் பேரமைதி.",
+            professional: "தொழில்முறை ஒழுக்கமும் கடின உழைப்பும் என்றும் வெற்றியைத் தரும்."
+        }
+    };
 
-// Generate caption
-function generateCaption() {
+    const targetLang = translations[language] || translations.english;
+    let baseText = targetLang[style] || targetLang.conversational;
+
+    // Incorporate context if typed in by the user
+    if (context && context.trim().length > 0) {
+        if (language === 'english') baseText = `Reflecting on [${context.trim()}]. ${baseText}`;
+        else if (language === 'hindi') baseText = `[${context.trim()}] के बारे में सोचते हुए। ${baseText}`;
+        else if (language === 'bengali') baseText = `[${context.trim()}] নিয়ে ভাবছিলাম। ${baseText}`;
+        else if (language === 'tamil') baseText = `[${context.trim()}] பற்றிய எண்ணங்கள். ${baseText}`;
+    }
+
+    let caption = `[${platform.toUpperCase()} - ${tone.toUpperCase()}] ${baseText}`;
+
+    if (length === 'long') {
+        caption += ' ' + (language === 'english' ? "This represents the hard work, consistency, and alignment of vision needed daily." : "इसके लिए निरंतरता और सही दिशा की आवश्यकता होती है।");
+    } else if (length === 'medium') {
+        caption += ' ' + (language === 'english' ? "Grateful for the journey." : "इस खूबसूरत सफर का आभारी हूँ।");
+    }
+
+    if (emojis) {
+        const emojiList = ['✨', '📸', '🔥', '🌟', '💫', '🙌', '🎯'];
+        const randomEmojis = emojiList.sort(() => 0.5 - Math.random()).slice(0, 3).join(' ');
+        caption += ' ' + randomEmojis;
+    }
+
+    if (hashtags) {
+        const hashtagList = [`#${platform}`, `#${style}`, `#${tone}`, '#photography', '#vibes', '#instagood'];
+        const randomHashtags = hashtagList.sort(() => 0.5 - Math.random()).slice(0, 4).join(' ');
+        caption += '\n\n' + randomHashtags;
+    }
+
+    return caption;
+}
+
+async function generateCaption() {
     if (!currentImage) {
         alert('Please upload an image first!');
         return;
     }
 
-    const style = document.getElementById('captionStyle').value;
-    const length = document.getElementById('captionLength').value;
-    const includeHashtags = document.getElementById('includeHashtags').checked;
-    const includeEmojis = document.getElementById('includeEmojis').checked;
-
-    // Show loading
     const captionContent = document.getElementById('captionContent');
-    captionContent.innerHTML = '<div style="text-align: center;"><div class="loading"></div><p style="margin-top: 15px; color: #9ca3af;">Generating your perfect caption...</p></div>';
+    captionContent.innerHTML = `
+        <div style="text-align: center;">
+            <div class="loading"></div>
+            <p style="margin-top: 15px; color: #9ca3af;">Generating your caption...</p>
+        </div>
+    `;
 
-    // Simulate AI processing
+    const platform = document.getElementById('captionPlatform').value;
+    const style = document.getElementById('captionStyle').value;
+    const tone = document.getElementById('captionTone').value;
+    const language = document.getElementById('captionLanguage').value;
+    const length = document.getElementById('captionLength').value;
+    const includeEmojis = document.getElementById('includeEmojis').checked;
+    const includeHashtags = document.getElementById('includeHashtags').checked;
+    const context = document.getElementById('captionContext').value;
+
     setTimeout(() => {
-        let caption = captionTemplates[style][Math.floor(Math.random() * captionTemplates[style].length)];
-
-        // Adjust length
-        if (length === 'short') {
-            caption = caption.split('\n\n')[0];
-        } else if (length === 'medium') {
-            const parts = caption.split('\n\n');
-            caption = parts.slice(0, 2).join('\n\n');
-        }
-
-        // Remove hashtags if not wanted
-        if (!includeHashtags) {
-            caption = caption.replace(/#\w+/g, '').trim();
-        }
-
-        // Remove emojis if not wanted
-        if (!includeEmojis) {
-            caption = caption.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
-        }
-
-        currentCaption = caption;
-        captionContent.innerHTML = `<p>${caption.replace(/\n/g, '<br>')}</p>`;
-
-        // Add to history
-        addToHistory(currentImage, caption);
-    }, 2000);
+        const mockCaption = generateMockCaption(platform, style, tone, language, length, includeEmojis, includeHashtags, context);
+        currentCaption = mockCaption;
+        captionContent.innerHTML = `<p>${currentCaption.replace(/\n/g, '<br>')}</p>`;
+        addToHistory(currentImage, currentCaption);
+    }, 500);
 }
 
-// Clear caption
 function clearCaption() {
     document.getElementById('captionContent').innerHTML = '<p class="placeholder-text">No caption yet. Upload an image to get started.</p>';
     currentCaption = '';
+    document.getElementById('captionContext').value = '';
 }
 
-// Copy caption
 function copyCaption() {
     if (!currentCaption) {
         alert('No caption to copy!');
@@ -237,7 +324,7 @@ function copyCaption() {
     navigator.clipboard.writeText(currentCaption).then(() => {
         const btn = event.target.closest('button');
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-width="2"/></svg> Copied!';
         btn.style.background = 'rgba(16, 185, 129, 0.2)';
         btn.style.borderColor = '#10b981';
         btn.style.color = '#10b981';
@@ -251,7 +338,6 @@ function copyCaption() {
     });
 }
 
-// Download caption
 function downloadCaption() {
     if (!currentCaption) {
         alert('No caption to download!');
@@ -269,38 +355,46 @@ function downloadCaption() {
     URL.revokeObjectURL(url);
 }
 
-// Add to history
-function addToHistory(image, caption) {
+// ===== HISTORY HANDLING =====
+function createThumbnail(base64Image, maxWidth = 200) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const scale = maxWidth / img.width;
+            const canvas = document.createElement('canvas');
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = base64Image;
+    });
+}
+
+async function addToHistory(image, caption) {
+    const thumbnail = await createThumbnail(image);
     const historyItem = {
         id: Date.now(),
-        image: image,
+        thumbnail: thumbnail,
         caption: caption,
         date: new Date().toLocaleString()
     };
-
     historyData.unshift(historyItem);
-    
-    // Keep only last 12 items
-    if (historyData.length > 12) {
-        historyData = historyData.slice(0, 12);
-    }
-
+    if (historyData.length > 12) historyData = historyData.slice(0, 12);
     localStorage.setItem('captionHistory', JSON.stringify(historyData));
     renderHistory();
 }
 
-// Render history
 function renderHistory() {
     const historyGrid = document.getElementById('historyGrid');
-
     if (historyData.length === 0) {
         historyGrid.innerHTML = '<p class="no-history">No history yet. Generate your first caption!</p>';
         return;
     }
-
     historyGrid.innerHTML = historyData.map(item => `
         <div class="history-item" onclick="viewHistoryItem(${item.id})">
-            <img src="${item.image}" alt="History" class="history-image">
+            <img src="${item.thumbnail}" class="history-image">
             <div class="history-content">
                 <p class="history-caption">${item.caption}</p>
                 <p class="history-date">${item.date}</p>
@@ -313,23 +407,14 @@ function renderHistory() {
     `).join('');
 }
 
-// View history item
 function viewHistoryItem(id) {
     const item = historyData.find(h => h.id === id);
     if (item) {
-        currentImage = item.image;
         currentCaption = item.caption;
-        previewImage.src = item.image;
-        uploadArea.style.display = 'none';
-        previewArea.style.display = 'block';
         document.getElementById('captionContent').innerHTML = `<p>${item.caption.replace(/\n/g, '<br>')}</p>`;
-        
-        // Scroll to generator
-        scrollToGenerator();
     }
 }
 
-// Copy history caption
 function copyHistoryCaption(id) {
     const item = historyData.find(h => h.id === id);
     if (item) {
@@ -338,14 +423,12 @@ function copyHistoryCaption(id) {
     }
 }
 
-// Delete history item
 function deleteHistoryItem(id) {
     historyData = historyData.filter(h => h.id !== id);
     localStorage.setItem('captionHistory', JSON.stringify(historyData));
     renderHistory();
 }
 
-// Clear all history
 function clearHistory() {
     if (confirm('Are you sure you want to clear all history?')) {
         historyData = [];
