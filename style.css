@@ -501,4 +501,33 @@ input:checked + .toggle-label:before { transform: translateX(30px); }
 .feature-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px; backdrop-filter: blur(10px); transition: all 0.3s; }
 .feature-card:hover { transform: translateY(-10px); border-color: #a855f7; box-shadow: 0 20px 60px rgba(168, 85, 247, 0.4); }
 
-footer { position: relative; z-index: 10; text-align
+footer { position: relative; z-index: 10; text-align : center; padding: 40px; background: var(--footer-bg); border-top: 1px solid var(--footer-border); color: var(--footer-text); transition: background 0.3s, border-color 0.3s, color 0.3s; }
+.footer-url { margin-top: 10px; font-size: 14px; color: #a855f7; }
+.light-theme .footer-url { color: #b475e6; }
+
+.loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+.light-theme .loading { border-color: rgba(180, 117, 230, 0.3); border-top-color: #b475e6; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.light-theme .upload-card, .light-theme .options-card, .light-theme .context-card, .light-theme .caption-card, .light-theme .history-section, .light-theme .feature-card { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(180, 117, 230, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
+.light-theme .btn-secondary-action { background: rgba(180, 117, 230, 0.1); border-color: #b475e6; color: #b475e6; }
+.light-theme .btn-secondary-action:hover { background: rgba(180, 117, 230, 0.2); }
+.light-theme .select-input { background: white; border: 1px solid #e0d0f0; color: #170724; }
+.light-theme .toggle-label { background-color: #d0c0e0; }
+.light-theme .placeholder-text { color: #7a6a8a; }
+#about { text-align: center; padding: 50px 20px; }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+   @media (max-width: 768px) {
+    .sidebar { display: none !important; }
+    .mobile-bottom-nav { display: flex; }
+    .main-content { margin-left: 0 !important; padding-bottom: 80px; }
+    header { left: 0 !important; padding: 15px 20px; }
+    h1 { font-size: 38px; }
+    .generator-section, .features { padding: 60px 16px; }
+    .section-title { font-size: 32px; }
+    .options-card { grid-template-columns: 1fr; }
+    .action-buttons { flex-direction: column; }
+    .copy-download-buttons { grid-template-columns: 1fr; }
+   }
