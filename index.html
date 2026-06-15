@@ -171,7 +171,22 @@
             <div class="container">
                 <h2 class="section-title">Generate Your Caption</h2>
                 
-                <div class="upload-card">
+                <!-- MODE SWITCH -->
+                <div class="mode-switch-container">
+                    <div class="mode-toggle">
+                        <button class="mode-btn mode-btn-active" id="standardModeBtn" onclick="switchMode('standard')">
+                            <i class="fa-solid fa-image"></i> Standard
+                        </button>
+                        <button class="mode-btn" id="influencerModeBtn" onclick="switchMode('influencer')">
+                            <i class="fa-solid fa-star"></i> Influencer
+                            <span class="mode-badge">Pro</span>
+                        </button>
+                    </div>
+                    <p class="mode-indicator" id="modeIndicator">Standard Mode</p>
+                </div>
+
+                <!-- UPLOAD AREA - STANDARD MODE -->
+                <div class="upload-card" id="standardUploadCard">
                     <div class="upload-area" id="uploadArea">
                         <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                         <p class="upload-text">Drag & Drop an image or <span class="click-text">click here</span></p>
@@ -190,15 +205,38 @@
                     </div>
                 </div>
 
+                <!-- UPLOAD AREA - INFLUENCER MODE -->
+                <div class="upload-card" id="influencerUploadCard" style="display: none;">
+                    <div class="upload-area" id="influencerUploadArea">
+                        <i class="fa-solid fa-images upload-icon"></i>
+                        <p class="upload-text">Drag & Drop up to 5 images or <span class="click-text">click here</span></p>
+                        <p class="upload-subtext">You can select multiple images at once</p>
+                        <input type="file" id="influencerFileInput" accept="image/*" multiple hidden>
+                        
+                        <div class="upload-buttons">
+                            <button class="btn-upload btn-choose" onclick="document.getElementById('influencerFileInput').click()">
+                                <i class="fa-solid fa-folder-open"></i> Choose Files
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="influencer-preview-area" id="influencerPreviewArea" style="display: none;">
+                        <div class="preview-carousel" id="previewCarousel"></div>
+                        <p class="preview-count" id="previewCount">0 images selected</p>
+                    </div>
+                </div>
+
                 <div class="options-card">
                     <div class="option-group">
                         <label>Platform Target</label>
                         <select id="captionPlatform" class="select-input">
-                            <option value="instagram">Instagram</option>
+                            <option value="instagram">Instagram Post</option>
+                            <option value="instagram_reels">Instagram Reels</option>
                             <option value="facebook">Facebook</option>
-                            <option value="twitter">Twitter</option>
+                            <option value="twitter">Twitter/X</option>
                             <option value="linkedin">LinkedIn</option>
                             <option value="whatsapp">WhatsApp Status</option>
+                            <option value="youtube_shorts">YouTube Shorts</option>
                         </select>
                     </div>
 
@@ -262,12 +300,21 @@
                     </div>
                 </div>
 
-                <div class="context-card">
+                <!-- CONTEXT AREA - STANDARD MODE -->
+                <div class="context-card" id="standardContextCard">
                     <label class="context-label">Context / Additional Details</label>
                     <textarea id="captionContext" class="context-textarea" placeholder="Add context here (e.g., Weekend trip with friends at mountains, birthday party vibes, etc...)"></textarea>
                 </div>
 
-                <div class="caption-card">
+                <!-- CONTEXT AREA - INFLUENCER MODE -->
+                <div class="context-card" id="influencerContextCard" style="display: none;">
+                    <label class="context-label context-label-required">Describe this post — what's the story, mood, or moment? <span class="required-asterisk">*</span></label>
+                    <textarea id="influencerContext" class="context-textarea context-textarea-required" placeholder="Tell us about your post... what's happening, the mood, the moment?" required></textarea>
+                    <p class="context-hint">This is required to generate captions in Influencer Mode</p>
+                </div>
+
+                <!-- CAPTION OUTPUT - STANDARD MODE -->
+                <div class="caption-card" id="standardCaptionCard">
                     <div class="caption-header">
                         <i class="fa-solid fa-comment-nodes"></i>
                         <h3>Generated Caption</h3>
@@ -291,6 +338,26 @@
                         </button>
                         <button class="btn-secondary-action" onclick="downloadCaption()">
                             <i class="fa-solid fa-arrow-down-to-bracket"></i> Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CAPTION OUTPUT - INFLUENCER MODE -->
+                <div class="caption-card" id="influencerCaptionCard" style="display: none;">
+                    <div class="caption-header">
+                        <i class="fa-solid fa-comments"></i>
+                        <h3>Generated Caption Options</h3>
+                    </div>
+                    <div class="captions-grid" id="captionsGrid">
+                        <p class="placeholder-text">No captions yet. Upload images and describe your post to get started.</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-action btn-generate" id="influencerGenerateBtn" onclick="generateInfluencerCaptions()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Captions
+                        </button>
+                        <button class="btn-action btn-delete" onclick="clearInfluencerCaptions()">
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -321,7 +388,7 @@
 
         <section id="about">
             <h1>About</h1>
-            <p class="feature-card">A Caption Generator Website is an online platform that automatically creates suitable captions for images uploaded by users. It uses artificial intelligence and machine learning models to analyze the content of an image and generate descriptive or creative text that matches it.</p>
+            <p class="feature-card">A Caption Generator Website is an online platform that automatically creates suitable captions for images uploaded by users. It uses artificial intelligence and machine learning to analyze image content and generate contextually relevant, engaging captions tailored to different platforms and styles.</p>
         </section>
     </main>
 
