@@ -169,6 +169,68 @@ if (themeToggleSide) themeToggleSide.addEventListener('click', toggleTheme);
 if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
 
 
+// ===== MODE SWITCHING FUNCTIONALITY =====
+let currentMode = 'standard';
+let influencerImages = [];
+let influencerCaptions = [];
+
+function switchMode(mode) {
+    currentMode = mode;
+    const standardUploadCard = document.getElementById('standardUploadCard');
+    const influencerUploadCard = document.getElementById('influencerUploadCard');
+    const standardContextCard = document.getElementById('standardContextCard');
+    const influencerContextCard = document.getElementById('influencerContextCard');
+    const standardCaptionCard = document.getElementById('standardCaptionCard');
+    const influencerCaptionCard = document.getElementById('influencerCaptionCard');
+    const modeIndicator = document.getElementById('modeIndicator');
+    const standardModeBtn = document.getElementById('standardModeBtn');
+    const influencerModeBtn = document.getElementById('influencerModeBtn');
+
+    if (mode === 'standard') {
+        standardUploadCard.style.display = 'block';
+        influencerUploadCard.style.display = 'none';
+        standardContextCard.style.display = 'block';
+        influencerContextCard.style.display = 'none';
+        standardCaptionCard.style.display = 'block';
+        influencerCaptionCard.style.display = 'none';
+        modeIndicator.textContent = 'Standard Mode';
+        standardModeBtn.classList.add('mode-btn-active');
+        influencerModeBtn.classList.remove('mode-btn-active');
+        clearStandardMode();
+    } else {
+        standardUploadCard.style.display = 'none';
+        influencerUploadCard.style.display = 'block';
+        standardContextCard.style.display = 'none';
+        influencerContextCard.style.display = 'block';
+        standardCaptionCard.style.display = 'none';
+        influencerCaptionCard.style.display = 'block';
+        modeIndicator.textContent = 'Influencer Mode (Pro)';
+        standardModeBtn.classList.remove('mode-btn-active');
+        influencerModeBtn.classList.add('mode-btn-active');
+        clearInfluencerMode();
+    }
+}
+
+function clearStandardMode() {
+    currentImage = null;
+    uploadArea.style.display = 'block';
+    previewArea.style.display = 'none';
+    fileInput.value = '';
+    generateBtn.disabled = true;
+}
+
+function clearInfluencerMode() {
+    influencerImages = [];
+    influencerCaptions = [];
+    document.getElementById('influencerUploadArea').style.display = 'block';
+    document.getElementById('influencerPreviewArea').style.display = 'none';
+    document.getElementById('influencerFileInput').value = '';
+    document.getElementById('influencerContext').value = '';
+    document.getElementById('influencerGenerateBtn').disabled = true;
+    document.getElementById('captionsGrid').innerHTML = '<p class="placeholder-text">No captions yet. Upload images and describe your post to get started.</p>';
+}
+
+
 // ===== CORE CAPTION PIPELINE PROCESSORS =====
 let currentImage = null;
 let currentCaption = '';
@@ -180,6 +242,7 @@ const previewArea = document.getElementById('previewArea');
 const previewImage = document.getElementById('previewImage');
 const generateBtn = document.getElementById('generateBtn');
 
+// STANDARD MODE - Single Image Upload
 if (uploadArea) {
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -233,11 +296,95 @@ function removeImage() {
     generateBtn.disabled = true;
 }
 
+// INFLUENCER MODE - Multi-image Upload (Max 5)
+const influencerUploadArea = document.getElementById('influencerUploadArea');
+const influencerFileInput = document.getElementById('influencerFileInput');
+const influencerPreviewArea = document.getElementById('influencerPreviewArea');
+const influencerGenerateBtn = document.getElementById('influencerGenerateBtn');
+
+if (influencerUploadArea) {
+    influencerUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        influencerUploadArea.style.borderColor = '#a855f7';
+        influencerUploadArea.style.background = 'rgba(168, 85, 247, 0.1)';
+    });
+
+    influencerUploadArea.addEventListener('dragleave', () => {
+        influencerUploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+        influencerUploadArea.style.background = '';
+    });
+
+    influencerUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        influencerUploadArea.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+        influencerUploadArea.style.background = '';
+        
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        handleInfluencerImageUpload(files);
+    });
+
+    influencerUploadArea.addEventListener('click', () => { influencerFileInput.click(); });
+}
+
+if (influencerFileInput) {
+    influencerFileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        handleInfluencerImageUpload(files);
+    });
+}
+
+function handleInfluencerImageUpload(files) {
+    const maxFiles = 5;
+    const filesToAdd = files.slice(0, maxFiles - influencerImages.length);
+    
+    filesToAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            influencerImages.push(e.target.result);
+            renderInfluencerPreview();
+            if (influencerImages.length > 0) {
+                influencerGenerateBtn.disabled = false;
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderInfluencerPreview() {
+    const previewCarousel = document.getElementById('previewCarousel');
+    const previewCount = document.getElementById('previewCount');
+    
+    previewCount.textContent = `${influencerImages.length} image${influencerImages.length !== 1 ? 's' : ''} selected`;
+    
+    previewCarousel.innerHTML = influencerImages.map((img, index) => `
+        <div class="preview-thumbnail-wrapper">
+            <img src="${img}" class="preview-thumbnail" alt="Preview ${index + 1}">
+            <button class="remove-thumbnail-btn" onclick="removeInfluencerImage(${index})">×</button>
+        </div>
+    `).join('');
+    
+    if (influencerImages.length > 0) {
+        influencerUploadArea.style.display = 'none';
+        influencerPreviewArea.style.display = 'block';
+    } else {
+        influencerUploadArea.style.display = 'block';
+        influencerPreviewArea.style.display = 'none';
+    }
+}
+
+function removeInfluencerImage(index) {
+    influencerImages.splice(index, 1);
+    renderInfluencerPreview();
+    if (influencerImages.length === 0) {
+        influencerGenerateBtn.disabled = true;
+    }
+}
+
 function scrollToGenerator() {
     document.getElementById('generator').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Updated simulation arrays incorporating multi-variable conditional parameters
+// Caption Generation
 function generateCaptionText(platform, style, tone, lang, length, emojis, hashtags, context) {
     let base = "";
     
@@ -246,9 +393,8 @@ function generateCaptionText(platform, style, tone, lang, length, emojis, hashta
     } else if (lang === "bengali") {
         base = "আজকের এই সুন্দর মুহূর্ত ফ্রেমবন্দী করলাম। জীবনের সেরা কিছু স্মৃতি।";
     } else if (lang === "tamil") {
-        base = "இந்த அழகான தருணம் எப்போதும் என் நினைவில் இருக்கும். மகிழ்ச்சியான வாழ்க்கை.";
+        base = "இந்த அழகான தருணம் எப்போதும் என் நினைவில் இருக்கும். மகிழ்ச்சியான வாழ்க்கை!";
     } else {
-        // English Default Array Template Blocks
         if (style === "storytelling") {
             base = "It started with a simple thought, but as the day went on, this exact viewpoint made me stop and realize how far the journey has come.";
         } else if (style === "minimal") {
@@ -268,12 +414,10 @@ function generateCaptionText(platform, style, tone, lang, length, emojis, hashta
         base = `[Regarding: ${context}] \n${base}`;
     }
 
-    // Adapt layout lengths
     if (length === 'long') {
         base += " Creating space for new milestones ahead while holding appreciation for every small step taken.";
     }
 
-    // Inject Platform specific signatures
     if (platform === "linkedin") {
         base = "💼 Professional Updates // \n\n" + base;
     } else if (platform === "twitter") {
@@ -322,10 +466,86 @@ async function generateCaption() {
     }, 600);
 }
 
+async function generateInfluencerCaptions() {
+    const influencerContext = document.getElementById('influencerContext').value;
+    
+    if (!influencerContext.trim()) {
+        alert('Please describe your post to generate captions!');
+        return;
+    }
+
+    if (influencerImages.length === 0) {
+        alert('Please upload at least one image!');
+        return;
+    }
+
+    const captionsGrid = document.getElementById('captionsGrid');
+    captionsGrid.innerHTML = `
+        <div style="text-align: center; grid-column: 1 / -1;">
+            <div class="loading"></div>
+            <p style="margin-top: 15px; color: #9ca3af;">Generating captions...</p>
+        </div>
+    `;
+
+    const platform = document.getElementById('captionPlatform').value;
+    const style = document.getElementById('captionStyle').value;
+    const tone = document.getElementById('captionTone').value;
+    const lang = document.getElementById('captionLanguage').value;
+    const length = document.getElementById('captionLength').value;
+    const includeEmojis = document.getElementById('includeEmojis').checked;
+    const includeHashtags = document.getElementById('includeHashtags').checked;
+
+    setTimeout(() => {
+        influencerCaptions = [
+            generateCaptionText(platform, style, tone, lang, length, includeEmojis, includeHashtags, influencerContext),
+            generateCaptionText(platform, style, tone, lang, length, includeEmojis, includeHashtags, influencerContext),
+            generateCaptionText(platform, style, tone, lang, length, includeEmojis, includeHashtags, influencerContext)
+        ];
+        renderInfluencerCaptions();
+        addToHistory(influencerImages[0], influencerCaptions[0]);
+    }, 800);
+}
+
+function renderInfluencerCaptions() {
+    const captionsGrid = document.getElementById('captionsGrid');
+    captionsGrid.innerHTML = influencerCaptions.map((caption, index) => `
+        <div class="caption-option">
+            <div class="caption-option-header">
+                <h4>Option ${index + 1}</h4>
+                <input type="radio" name="selected-caption" value="${index}" onchange="selectCaption(${index})">
+            </div>
+            <div class="caption-option-content">
+                <p>${caption.replace(/\n/g, '<br>')}</p>
+            </div>
+            <div class="caption-option-actions">
+                <button class="btn-secondary-action" onclick="copyInfluencerCaption(${index})">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+let selectedCaptionIndex = 0;
+function selectCaption(index) {
+    selectedCaptionIndex = index;
+}
+
+function copyInfluencerCaption(index) {
+    navigator.clipboard.writeText(influencerCaptions[index]).then(() => {
+        alert('Caption copied to clipboard!');
+    });
+}
+
 function clearCaption() {
     document.getElementById('captionContent').innerHTML = '<p class="placeholder-text">No caption yet. Upload an image to get started.</p>';
     currentCaption = '';
     document.getElementById('captionContext').value = '';
+}
+
+function clearInfluencerCaptions() {
+    document.getElementById('captionsGrid').innerHTML = '<p class="placeholder-text">No captions yet. Upload images and describe your post to get started.</p>';
+    influencerCaptions = [];
 }
 
 function copyCaption() {
@@ -438,4 +658,5 @@ function clearHistory() {
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
     if (generateBtn) generateBtn.disabled = true;
+    switchMode('standard');
 });
